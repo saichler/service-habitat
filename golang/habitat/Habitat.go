@@ -1,12 +1,13 @@
 package main
 
 import (
-	commands2 "github.com/saichler/service-manager/golang/file-manager/commands"
-	message_handlers2 "github.com/saichler/service-manager/golang/file-manager/message-handlers"
-	service2 "github.com/saichler/service-manager/golang/file-manager/service"
-	"github.com/saichler/service-manager/golang/management/commands"
-	message_handlers "github.com/saichler/service-manager/golang/management/message-handlers"
-	"github.com/saichler/service-manager/golang/management/service"
+	commands2 "github.com/saichler/file-management-service/golang/file-management-service/commands"
+	message_handlers2 "github.com/saichler/file-management-service/golang/file-management-service/message-handlers"
+	service2 "github.com/saichler/file-management-service/golang/file-management-service/service"
+	"github.com/saichler/service-habitat/golang/habitat/test"
+	"github.com/saichler/service-management-service/golang/management-service/commands"
+	message_handlers "github.com/saichler/service-management-service/golang/management-service/message-handlers"
+	"github.com/saichler/service-management-service/golang/management-service/service"
 	"github.com/saichler/service-manager/golang/service-manager"
 	"io/ioutil"
 	"os"
@@ -23,7 +24,10 @@ func main() {
 	serviceManager.Console().RegisterCommand(commands.NewLS(serviceManager), "ls")
 	serviceManager.Console().RegisterCommand(commands.NewCD(serviceManager), "cd")
 	serviceManager.AddService(NewFileService())
-	serviceManager.AddService(NewService())
+	ms, mh, mc := NewService()
+	serviceManager.AddService(ms, mh, mc)
+
+	serviceManager.Console().RegisterCommand(test.NewTest(ms), "test")
 
 	files, e := ioutil.ReadDir("./plugins")
 	if e == nil {
